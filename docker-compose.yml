@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  sdk-gpt:
+    build: .
+    volumes:
+      - ./sdk_docs:/app/sdk_docs
+    stdin_open: true
+    tty: true

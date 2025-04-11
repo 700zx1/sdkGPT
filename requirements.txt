@@ -1,0 +1,11 @@
+langchain
+langchain-openai
+openai
+faiss-cpu
+tiktoken
+unstructured
+beautifulsoup4
+lxml
+PyQt6
+fuzzywuzzy
+python-Levenshtein
