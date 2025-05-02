@@ -31,7 +31,7 @@ def custom_loader(path):
 class SDKGPTApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SDK-GPT QA")
+        self.setWindowTitle("sdkGPT")
         self.setGeometry(100, 100, 800, 600)
 
         layout = QVBoxLayout()
