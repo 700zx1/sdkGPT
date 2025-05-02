@@ -1,4 +1,4 @@
-# SDK-GPT-QA
+# sdkGPT
 
 A powerful AI-powered assistant that lets you ask questions about your SDK or codebase using GPT-4. Supports terminal and GUI modes, fuzzy search, and automatic SDK indexing.
 
