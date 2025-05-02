@@ -47,6 +47,12 @@ class SDKGPTApp(QWidget):
         self.output_area.setReadOnly(True)
         layout.addWidget(self.output_area)
 
+        # Add a new context window for displaying processed files
+        self.context_window = QTextEdit()
+        self.context_window.setReadOnly(True)
+        self.context_window.setPlaceholderText("Processed files will be listed here...")
+        layout.addWidget(self.context_window)
+
         self.setLayout(layout)
         self.ask_button.clicked.connect(self.ask_question)
 
@@ -61,6 +67,10 @@ class SDKGPTApp(QWidget):
         try:
             # Load the vectorstore using FAISS.load_local
             vectorstore = FAISS.load_local("vectorstore", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+
+            # Extract and display the list of processed files
+            self.display_processed_files(vectorstore)
+
             return RetrievalQA.from_chain_type(
                 llm=ChatOpenAI(model="gpt-4"),
                 retriever=vectorstore.as_retriever()
@@ -68,6 +78,21 @@ class SDKGPTApp(QWidget):
         except Exception as e:
             self.output_area.append(f"[!] Error loading vectorstore: {e}")
             return None
+
+    def display_processed_files(self, vectorstore):
+        """Display the list of processed files in the context window."""
+        try:
+            # Access all documents directly from the vectorstore's docstore
+            documents = vectorstore.docstore._dict.values()  # Access all stored documents
+            file_list = [doc.metadata.get("source", "Unknown") for doc in documents]
+
+            # Display the file list in the context window
+            self.context_window.clear()
+            self.context_window.append("Processed Files:\n")
+            for file in file_list:
+                self.context_window.append(f"- {file}")
+        except Exception as e:
+            self.context_window.append(f"[!] Error displaying processed files: {e}")
 
     def ask_question(self):
         query = self.question_input.text()
