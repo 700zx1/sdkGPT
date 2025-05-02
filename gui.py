@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from langchain_openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -53,6 +53,13 @@ class SDKGPTApp(QWidget):
         self.context_window.setPlaceholderText("Processed files will be listed here...")
         layout.addWidget(self.context_window)
 
+        # Add a loading indicator
+        self.loading_label = QLabel("Loading...")
+        self.loading_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.loading_label.setStyleSheet("color: blue; font-weight: bold;")
+        self.loading_label.hide()  # Initially hidden
+        layout.addWidget(self.loading_label)
+
         self.setLayout(layout)
         self.ask_button.clicked.connect(self.ask_question)
 
@@ -98,12 +105,20 @@ class SDKGPTApp(QWidget):
         query = self.question_input.text()
         if not query.strip() or self.qa is None:
             return
+
+        # Show the loading indicator
+        self.loading_label.show()
+        self.output_area.append(f"<b>Q:</b> {query}")
+
         try:
+            # Process the query
             result = self.qa.run(query)
-            self.output_area.append(f"<b>Q:</b> {query}")
             self.output_area.append(f"<b>A:</b> {result}\n")
         except Exception as e:
             self.output_area.append(f"[!] Error processing query: {e}")
+        finally:
+            # Hide the loading indicator
+            self.loading_label.hide()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
