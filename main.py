@@ -27,7 +27,7 @@ def custom_loader(path):
     return documents
 
 def main():
-    print("\033[1m\033[96m[SDK-GPT QA]\033[0m Starting...")
+    print("\033[1m\033[96m[sdkGPT]\033[0m Starting...")
 
     docs_path = "./sdk_docs"
     if not os.path.exists(docs_path):
@@ -55,7 +55,7 @@ def main():
     while True:
         query = input("\n\033[1m>\033[0m ")
         if query.strip().lower() in ("exit", "quit"):
-            print("\n\033[93mExiting SDK-GPT QA. Goodbye!\033[0m")
+            print("\n\033[93mExiting sdkGPT. Goodbye!\033[0m")
             break
         result = qa(query)
         print("\n\033[92mAnswer:\033[0m", result['result'])

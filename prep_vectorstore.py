@@ -3,7 +3,6 @@ from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-import pickle
 import os
 
 def custom_loader(path):
@@ -39,10 +38,13 @@ def main():
     embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_documents(chunks, embeddings)
 
-    with open("vectorstore.pkl", "wb") as f:
-        pickle.dump(vectorstore, f)
+    # Save the vectorstore using FAISS's save_local method
+    vectorstore.save_local("vectorstore")
 
-    print("Vectorstore saved to vectorstore.pkl")
+    print("Vectorstore saved to the 'vectorstore' directory")
+
+    # Load the vectorstore using FAISS's load_local method with the safety flag
+    #vectorstore = FAISS.load_local("vectorstore", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
 
 if __name__ == "__main__":
     main()

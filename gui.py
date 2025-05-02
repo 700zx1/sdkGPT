@@ -53,23 +53,32 @@ class SDKGPTApp(QWidget):
         self.qa = self.load_qa()
 
     def load_qa(self):
-        if not os.path.exists("vectorstore.pkl"):
-            self.output_area.append("[!] vectorstore.pkl not found. Please run prep_vectorstore.py first.")
+        # Check if the vectorstore directory exists
+        if not os.path.exists("vectorstore"):
+            self.output_area.append("[!] Vectorstore directory not found. Please run prep_vectorstore.py first.")
             return None
-        with open("vectorstore.pkl", "rb") as f:
-            vectorstore = pickle.load(f)
-        return RetrievalQA.from_chain_type(
-            llm=ChatOpenAI(model="gpt-4"),
-            retriever=vectorstore.as_retriever()
-        )
+
+        try:
+            # Load the vectorstore using FAISS.load_local
+            vectorstore = FAISS.load_local("vectorstore", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+            return RetrievalQA.from_chain_type(
+                llm=ChatOpenAI(model="gpt-4"),
+                retriever=vectorstore.as_retriever()
+            )
+        except Exception as e:
+            self.output_area.append(f"[!] Error loading vectorstore: {e}")
+            return None
 
     def ask_question(self):
         query = self.question_input.text()
         if not query.strip() or self.qa is None:
             return
-        result = self.qa(query)
-        self.output_area.append(f"<b>Q:</b> {query}")
-        self.output_area.append(f"<b>A:</b> {result['result']}\n")
+        try:
+            result = self.qa.run(query)
+            self.output_area.append(f"<b>Q:</b> {query}")
+            self.output_area.append(f"<b>A:</b> {result}\n")
+        except Exception as e:
+            self.output_area.append(f"[!] Error processing query: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
